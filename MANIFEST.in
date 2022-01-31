@@ -3,3 +3,4 @@ include Makefile
 include ChangeLog.rst
 include doc/conf.py
 include doc/*.rst
+recursive-include couchdb/tests/ *
