@@ -14,6 +14,7 @@ import time
 import tempfile
 import threading
 import unittest
+import urllib
 
 from couchdb import client, http, util
 from couchdb.tests import testutil
@@ -131,7 +132,11 @@ class ServerTestCase(testutil.TempDatabaseMixin, unittest.TestCase):
             server.delete(dbname)
 
     def test_basic_auth(self):
-        url = "http://root:password@localhost:5984/"
+        spliturl = urllib.parse.urlsplit(client.DEFAULT_BASE_URL)
+        url = '{}://root:password@{}/'.format(
+            spliturl.scheme,
+            spliturl.netloc,
+        )
         server = client.Server(url)
         dbname = 'couchdb-python/test_basic_auth'
         self.assertRaises(http.Unauthorized, server.create, dbname)

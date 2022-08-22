@@ -37,3 +37,22 @@ Prerequisites:
 .. _PyPI: http://pypi.python.org/
 .. _documentation: http://couchdb-python.readthedocs.io/en/latest/
 .. _mailing list: http://groups.google.com/group/couchdb-python
+
+Building Debian package on Ubuntu
+---------------------------------
+
+We run tests against CouchDB 1.6.1 since that is where most of the
+tests should pass:
+
+Ubuntu Bionic::
+
+   docker network create couchdb-python
+   docker run --network couchdb-python --rm --detach --publish 5984:5984 --name couchdb-test couchdb:1.6.1
+   docker run --network couchdb-python --env COUCHDB_URL="http://couchdb-test:5984/" --rm --detach -ti --volume $PWD:/build --name couchdb-python-build ubuntu:18.04
+   docker exec couchdb-python-build apt-get update
+   docker exec --tty --interactive couchdb-python-build apt-get -y install python3-stdeb fakeroot python-all dh-python
+   docker exec --workdir /build couchdb-python-build python3 setup.py egg_info --tag-build ~bionic1 sdist
+   docker exec --workdir /build couchdb-python-build python3 setup.py --command-packages=stdeb.command egg_info --tag-build ~bionic1 bdist_deb
+   docker stop couchdb-test
+   docker stop couchdb-python-build
+   docker network rm couchdb-python

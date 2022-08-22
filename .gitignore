@@ -5,3 +5,5 @@ dist/*
 doc/build/*
 .tox
 .coverage
+deb_dist/
+*.tar.gz
